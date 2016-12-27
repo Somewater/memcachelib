@@ -86,7 +86,7 @@ int list_delkey(linked_list_t * list, char * key) {
 }
 
 int table_delkey(hashtable_t * table, char * key) {
-    return ht_delete(table,key,sizeof(key),NULL,NULL);
+    return ht_delete(table,key,strlen(key),NULL,NULL);
 }
 
 int trimtosize(memcache * cache) {
@@ -107,7 +107,7 @@ int trimtosize(memcache * cache) {
 }
 
 int set(memcache * cache, char * key, char ** value, int valueLen) {
-    printf("set\tkey:%s\tval:%.*s\n",key,valueLen,*value);
+    printf("set\tkey:%s\tval:%s.\n",key,*value);
     //delete key from list if exists
     list_delkey(cache->list, key);
     //add 2 tail
@@ -116,7 +116,7 @@ int set(memcache * cache, char * key, char ** value, int valueLen) {
         return res;
     }
     else {
-        res = ht_set(cache->table, key, sizeof(key), *value, valueLen);
+        res = ht_set(cache->table, key, strlen(key), *value, valueLen);
         if (res == 0) {
             res = trimtosize(cache);
         }
@@ -130,7 +130,7 @@ int set(memcache * cache, char * key, char ** value, int valueLen) {
 
 size_t get(memcache * cache, char * key, char ** value) {
     size_t dlen = -1;
-    char *val = ht_get(cache->table, key, sizeof(key),&dlen);
+    char *val = ht_get(cache->table, key, strlen(key),&dlen);
     printf("get\tval:%.*s\n",(int)dlen,val);
     //remove key
     list_delkey(cache->list,key);
